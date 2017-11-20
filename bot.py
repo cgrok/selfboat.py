@@ -189,11 +189,11 @@ class Selfboat(commands.Bot):
         self.session.close()
         await self.logout()
 
-    @commands.command()
-    async def prefix(self, ctx, *, prefix):
+    @commands.command(name='prefix')
+    async def _prefix(self, ctx, *, prefix):
         """ Change temporarily bot's prefix """
         os.environ['PREFIX'] = prefix
-        await ctx.edit(f{prefix}')
+        await ctx.edit(f'{prefix}')
         try:
             for channel in self.error_logs:
                 if channel.send_messages:
