@@ -20,32 +20,16 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
-import asyncio
-import aiohttp
-import datetime
-import time
-import json
-import sys
-import os
-import re
-import traceback
-import textwrap
-import psutil
-import urbandict
-import bs4 as bs
-import urllib.request
-import requests
 
-from bs4 import BeautifulSoup
-from urllib.request import Request, urlopen
-from discord.ext import commands
-from urllib.request import urlopen
-from enum import Enum
+import aiohttp
+import re
+import os
+import json
 
 
 # git+https://github.com/fourjr/discord.py@rewrite
 class Selfboat(commands.Bot):
-
+    '''Custom client'''
     _mentions_transforms = {'@everyone': '@\u200beveryone',
                             '@here': '@\u200bhere'}
 
@@ -83,17 +67,21 @@ class Selfboat(commands.Bot):
 
     @property
     def prefix(self):
+        '''Get the user prefix or default (//)'''
         with open('data/options.json') as f:
             return json.load(f).get('PREFIX')
 
     @property
     def error_logs(self):
+        '''Get the user-configured error log channel'''
         with open('data/options.json') as f:
-            return int(json.load(f).get('ERROR-CHANNEL'))
+            return self.get_channel(int(json.load(f).get('ERROR-CHANNEL')))
 
-    def init(self, token=None):
+    @classmethod
+    def init(cls, token=None):
+        '''Start the bot'''
         try:
-            self.run(token, bot=False, reconnect=True)
+            cls().run(token, bot=False, reconnect=True)
         except Exception as e:
             print(e)
 
@@ -104,89 +92,76 @@ class Selfboat(commands.Bot):
                 self.load_extension(f'{path}{extension}')
                 print(f'Loaded extension: {extension}')
             except Exception as e:
-                print(f'LoadError: {extension}\n'
-                      f'{type(e).__name__}: {e}')
+                print(f'LoadError: {extension}\n{type(e).__name__}: {e}')
 
     @commands.command(aliases=["reloadcog"])
     async def reload(self, ctx, *, cog: str):
         """ Reload any cog """
-        cog = f"cogs.{cog}"
-        self.unload_extension(cog)
+        cog = f'cogs.{cog}'
         try:
+            self.unload_extension(cog)
             self.load_extension(cog)
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Successfully reloaded the'
-                    await self.error_logs.send(f'{readable}: {cog}')
         except Exception as e:
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Error reloading cog'
-                    await self.error_logs.send(f'{readable}: {cog}\n```py\n{e}\n```')
+            await ctx.send(f'Error occured while reloading {cog}\n```py\n{e}\n```')
+        else:
+            await ctx.send(f'Successfully reloaded {cog}')
 
     @commands.command(aliases=["loadcog"])
     async def load(self, ctx, *, cog: str):
         """ Load a cog """
+        cog = f'cogs.{cog}'
         try:
-            self.load_extension(cog)
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Successfully loaded the'
-                    await self.error_logs.send(f'{readable}: {cog}')
+            self.unload_extension(cog)
         except Exception as e:
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Error loading cog'
-                    await self.error_logs.send(f'{readable}: {cog}\n```py\n{e}\n```')
+            await ctx.send(f'Error occured while loading {cog}\n```py\n{e}\n```')
+        else:
+            await ctx.send(f'Successfully unloaded {cog}')
 
     @commands.command(aliases=["unloadcog"])
     async def unload(self, ctx, *, cog: str):
         """ Unload any cog """
         try:
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Successfully unloaded the'
-                    await self.error_logs.send(f'{readable}: {cog}')
-                    self.unload_extension(cog)
+            self.unload_extension(cog)
         except Exception as e:
-            for channel in self.error_logs:
-                if channel.send_messages:
-                    readable = 'Error unloading cog'
-                    await self.error_logs.send(f'{readable}: {cog}\n```py\n{e}\n```')
+            await ctx.send(f'Error occured while unloading {cog}\n```py\n{e}\n```')
+        else:
+            await ctx.send(f'Successfully unloaded {cog}')
 
     # Okay, this is a complete mess, sorry
-    @commands.command(aliases=['listcogs'])
-    async def cogs(self, ctx):
-        """ See unloaded and loaded cogs! """
-        if ctx.author in dev_list:
-            def pagify(text, delims=['\n'], *, escape=True, shorten_by=8,
-                       page_length=2000):
-                in_text = text
+    @commands.command(name='cogs', aliases=['listcogs'])
+    async def _cogs(self, ctx):
+        '''See unloaded and loaded cogs!'''
+        def pagify(text, delims=['\n'], *, escape=True, shorten_by=8,
+                   page_length=2000):
+            '''Pagify!'''
+            in_text = text
+            if escape:
+                num_mentions = text.count('@here') + text.count('@everyone')
+                shorten_by += num_mentions
+            page_length -= shorten_by
+            while len(in_text) > page_length:
+                closest_delim = max([in_text.rfind(d, 0, page_length)
+                                     for d in delims])
+                closest_delim = closest_delim if closest_delim != -1 else page_length
                 if escape:
-                    num_mentions = text.count('@here') + text.count('@everyone')
-                    shorten_by += num_mentions
-                page_length -= shorten_by
-                while len(in_text) > page_length:
-                    closest_delim = max([in_text.rfind(d, 0, page_length)
-                                         for d in delims])
-                    closest_delim = closest_delim if closest_delim != -1 else page_length
-                    if escape:
-                        to_send = escape_mass_mentions(in_text[:closest_delim])
-                    else:
-                        to_send = in_text[:closest_delim]
-                    yield to_send
-                    in_text = in_text[closest_delim:]
-                yield in_text
+                    to_send = escape_mass_mentions(in_text[:closest_delim])
+                else:
+                    to_send = in_text[:closest_delim]
+                yield to_send
+                in_text = in_text[closest_delim:]
+            yield in_text
 
             def box(text, lang=''):
+                '''Turns it into the discord syntax highlighting'''
                 ret = f'```{lang}\n{text}\n```'
                 return ret
-            loaded = [c.__module__.split('.')[1] for c in self.bot.cogs.values()]
+            loaded = [c.__module__.split('.')[1] for c in self.cogs.values()]
             # What's in the folder but not loaded is unloaded
 
             def _list_cogs():
-                  cogs = [os.path.basename(f) for f in 'cogs/*.py' or 'cogs/community/*.py']
-                  return ['cogs.' + os.path.splitext(f)[0] for f in cogs]
+                '''List all cogs'''
+                cogs = [os.path.basename(f) for f in 'cogs/*.py' or 'cogs/community/*.py']
+                return ['cogs.' + os.path.splitext(f)[0] for f in cogs]
             unloaded = [c.split('.')[1] for c in _list_cogs() if c.split('.')[1] not in loaded]
 
             if not unloaded:
@@ -194,8 +169,6 @@ class Selfboat(commands.Bot):
 
             await ctx.send(", ".join(sorted(loaded)))
             await ctx.send(", ".join(sorted(unloaded)))
-        else:
-            pass
 
     @commands.group(invoke_without_command=True, name='sh', hidden=True)
     async def _sh(self, ctx, *, cmd: str=None):
@@ -204,7 +177,7 @@ class Selfboat(commands.Bot):
         pass
 
     @_sh.command(name='logout', hidden=True)
-    async def _logout(self, ctx, *, input: str=None):
+    async def _logout(self, ctx, *, _input: str=None):
         """ Shutdown in case of malfunction """
         await self.change_presence(status=discord.Status.offline)
         for channel in self.error_logs:
@@ -233,4 +206,3 @@ class Selfboat(commands.Bot):
 
 if __name__ == '__main__':
     Selfboat.init()
-
