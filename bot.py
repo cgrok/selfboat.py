@@ -94,8 +94,8 @@ class Selfboat(commands.Bot):
             except Exception as e:
                 print(f'LoadError: {extension}\n{type(e).__name__}: {e}')
 
-    @commands.command(aliases=["reloadcog"])
-    async def reload(self, ctx, *, cog: str):
+    @commands.command(aliases=["reloadcog"], name='reload')
+    async def _reload(self, ctx, *, cog: str):
         """ Reload any cog """
         cog = f'cogs.{cog}'
         try:
