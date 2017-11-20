@@ -2,6 +2,7 @@ from __future__ import division
 import discord
 import math
 import operator
+import asyncio
 from discord.ext import commands
 from pyparsing import (Literal, CaselessLiteral, Word, Combine, Group, Optional,
                        ZeroOrMore, Forward, nums, alphas, oneOf)
