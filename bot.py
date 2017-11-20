@@ -53,24 +53,50 @@ class Selfboat(commands.Bot):
 
     def __init__(self, *args, **kwargs):
         bot = self.bot
-        super().__init__(command_prefix=self.get_pre, self_bot=True)
+        super().__init__(command_prefix=self.prefix, self_bot=True)
         self.description = '''Selfboat.py is a personal boat inspired by Selfbot.tk 
                               and improved by cgrok members\n
                               Just like your trousers... Take it with you wherever you are.'''
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.prefix = None
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.last_message = None
         # So, the idea is that user has to set a personal guild to use Selfboat error logs
-        personal_guild = discord.utils.find(lambda s: s.id == 376697605029101569, bot.guilds)
+        # Look at error_logs
         # self.remove_command('help')
-        self.add_command(self.load)
         self.load_extensions()
+        self.add_command(self.load)
         self.add_command(self.reload)
         self.add_command(self.unload)
-        self.error_logs = personal_guild.get_channel(376698567370342400)
-        # await self.error_logs.send(f'{readable}```py\n{e}\n```')
 
+    @property
+    def token(self):
+        '''Get the token wherever it is'''
+        with open('data/config.json') as f:
+            token = json.load(f).get('TOKEN')
+        return os.environ.get('TOKEN') or token.strip('"').strip('"')
+
+    @property
+    def githubtoken(self):
+        '''Get the token wherever it is'''
+        with open('data/config.json') as f:
+            token = json.load(f).get('GITHUBTOKEN')
+        return os.environ.get('GITHUBTOKEN') or token.strip('"').strip('"')
+
+    @property
+    def prefix(self):
+        with open('data/options.json') as f:
+            return json.load(f).get('PREFIX')
+
+    @property
+    def error_logs(self):
+        with open('data/options.json') as f:
+            return int(json.load(f).get('ERROR-CHANNEL'))
+
+    def init(self, token=None):
+        try:
+            self.run(token, bot=False, reconnect=True)
+        except Exception as e:
+            print(e)
 
     def load_extensions(self, cogs=None, path='cogs.'):
         ''' Loads the default set of extensions '''
