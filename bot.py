@@ -52,7 +52,6 @@ class Selfboat(commands.Bot):
     _mention_pattern = re.compile('|'.join(_mentions_transforms.keys()))
 
     def __init__(self, *args, **kwargs):
-        bot = self.bot
         super().__init__(command_prefix=self.prefix, self_bot=True)
         self.description = '''Selfboat.py is a personal boat inspired by Selfbot.tk 
                               and improved by cgrok members\n
