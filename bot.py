@@ -148,6 +148,49 @@ class Selfboat(commands.Bot):
                 token = json.load(f).get('GITHUBTOKEN')
             return os.environ.get('GITHUBTOKEN') or token.strip('"').strip('"')
 
+    async def githubusername():
+        async with self.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {self.githubtoken}"}) as resp: #get username 
+            if 300 > resp.status >= 200:
+                return (await resp.json())['login']
+            if resp.status == 401: #invalid token!
+                return None
+                   
+    # TO ADD TO CUSTOM CTX
+    async def premium(error=False):
+        async with self.session.get('https://api.github.com/user/starred/cgrok/selfboat.py', headers={"Authorization": f"Bearer {bot.githubtoken}"}) as resp:
+            if resp.status == 204:
+                if discord.utils.get(bot.guilds, id=376697605029101569) is None:
+                    if not error:
+                        await ctx.send('**This is a premium command, to unlock it, join our support guild: <https://discord.gg/Fa767ZW!>**')
+                    return False
+                else:
+                    return True
+            if resp.status == 404:
+                if not error:
+                    await ctx.send('**This is a premium command, to unlock it, ensure you have starred <https://github.com/cgrok/selfboat.py>**')
+                return False
+
+    async def updatedata(self, path:str, content:str, commitmsg='No Commit Message'):
+        '''To edit data in Github'''
+        #get username
+        username = await bot.githubusername()
+        #get sha (dont even know why this is a compulsory field)
+        async with self.session.get(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}', headers={"Authorization": f"Bearer {bot.githubtoken}"}) as resp2:
+            if 300 > resp2.status >= 200:
+                #push to path
+                async with self.session.put(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}', headers={"Authorization": f"Bearer {bot.githubtoken}"}, json={"path":"data/cc.json", "message":commitmsg, "content":base64.b64encode(bytes(content, 'utf-8')).decode('ascii'), "sha":(await resp2.json())['sha'], "branch":"rewrite"}) as resp3:
+                    if 300 > resp3.status >= 200:
+                        return True
+                        #data pushed successfully
+                    else:
+                        await self.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp3.json()) + '\n```')
+                        return False 
+            else:
+                await self.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
+        return False
+
+    # TO ADD ABOVE TO CUSTOM CTX
+
     @staticmethod
     async def get_pre(bot, message):
         """ Returns the prefix, default (//) """
