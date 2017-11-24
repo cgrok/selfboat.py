@@ -1,12 +1,12 @@
-warning = [
-  "warn": "Oops, wrong Guild\nI'll do this in my Guild! Sorry",
-  "warn": "Nvm, I meant to send this message elsewhere",
-  "warn": "Wait, what was that?",
-  "warn": "Okay, clicked wrong server... brb"
+warn = [
+  "Oops, wrong Guild\nI'll do this in my Guild! Sorry",
+  "Nvm, I meant to send this message elsewhere",
+  "Wait, what was that?",
+  "Okay, clicked wrong server... brb"
 ]
 premium = [
-  "vip": "**This is a premium command, to unlock it, join our support guild:\n<https://discord.gg/Fa767ZW!>**",
-  "vip": "Hey, forgot to check this <https://discord.gg/Fa767ZW!>, brb",
-  "vip": "How silly, gotta check something in <https://discord.gg/Fa767ZW!>",
-  "vip": "<https://discord.gg/Fa767ZW!>"
+  "**This is a premium command, to unlock it, join our support guild:\n<https://discord.gg/Fa767ZW!>**",
+  "Hey, forgot to check this <https://discord.gg/Fa767ZW!>, brb",
+  "How silly, gotta check something in <https://discord.gg/Fa767ZW!>",
+  "<https://discord.gg/Fa767ZW!>"
 ]
