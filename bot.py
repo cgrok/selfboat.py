@@ -345,6 +345,49 @@ class Selfboat(commands.Bot):
                     readable = 'Error changing prefix to'
                     await self.error_logs.send(f'{readable}: `{prefix}`\n```py\n{e}\n```')
 
+    #################################################################
+    #  !»--~ ModLogs ~--«! and channel_log are setup here before 
+    # Selfboat.py can be used anywhere. This is to get a place for 
+    # the message outputs to have a place to print and show errors.
+    #################################################################
+    async def setup(self, ctx):
+        """ Sets up a guild and channel for Selfboat.py """
+        warn = "Oops, wrong Guild\nI'll do this in my Guild! Sorry"
+        desc = textwrap.fill("""As it currently is (Nov-2017), discord.py API wrapper doesn't handle message 
+        Headers *'correctly'* for self-bots, only for regular bot-accounts, and the Discord API doesn't like 
+        these Headers to show up in any DMs, so they *will* most likely `flag` or `disable` your account for 
+        such infractions. Because this constitutes Discord API abuse. \n
+        However, this is not the case with ***Selfboat.py***.\n\n
+        Regardless, please use this personal Python app wisely.\n```py\n
+        The purpose of this channel is for you to spam commands and practise, as well as to print all errors 
+        and messages any time you execute commands elsewhere.```\n***Selfboat.py*** is made in Python3.6 and 
+        uses v1.0.0.x a fork of Discord.py\n\nPlease join our Support Guild to continue to enjoy of this app
+        and get news about fixes and features, and suggest more.\nhttps:discord.gg/""")
+        if ctx.author.id != ctx.guild.owner_id:
+            return await ctx.edit(ctx.message, warn, delete_after=5)
+
+        if ctx.author.id == ctx.guild.owner_id:
+            if discord.utils.get(ctx.guild.categories, name='!»--~ ModLogs ~--«!'):
+                succ = "Reee! I already set this guild up #ModLogs"
+                return await ctx.send(succ, delete_after=5)
+            try:
+                modlogs_category = await ctx.guild.create_category(name='»--~ ModLogs ~--«')
+                await modlogs_category.edit(position=0)
+                c = await ctx.guild.create_text_channel(name='channel-log', category=modlogs_category)
+                em = discord.Embed(title="Welcome to Selfboat.py, your personal bot", 
+                                   colour=discord.Colour(0xed791d))
+                em.description = f"{desc}"
+                em.set_footer(text='»A lite, clean & stealthy boat to keep you afloat«')
+                em.set_image(url='https://take-me-to.space/CS8ddXG.png')
+                await c.send(embed=em)
+                await ctx.send('***Selfboat.py*** server is ready.')
+
+            except discord.Forbidden:
+                await ctx.edit(ctx.message, warn, delete_after=5)
+        else:
+            pass
+
+
     # Selfboat doesn't print results outside ERROR-CHANNEL
     '''@commands.command(aliases=["reloadcog"], name='reload')
     async def _reload(self, ctx, *, cog: str):
