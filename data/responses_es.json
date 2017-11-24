@@ -1,0 +1,12 @@
+warn = [
+  "Bueno, esto si que es embarrasoso, mejor voy a mi servidor a spamear",
+  "XD, me equivoqué de servidor...",
+  "Eh, que fue eso?",
+  "Ya regreso, me confundí de servidor"
+]
+premium = [
+  "**Este comando es premium, para usarlo, entra en:\n<https://discord.gg/Fa767ZW!>**",
+  "Cómo se me olvidó checar esto <https://discord.gg/Fa767ZW!>, brb",
+  "Por dios, tenía que mandar un mensaje en <https://discord.gg/Fa767ZW!> y me confundí",
+  "<https://discord.gg/Fa767ZW!>"
+]
