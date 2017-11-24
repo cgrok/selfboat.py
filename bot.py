@@ -352,19 +352,23 @@ class Selfboat(commands.Bot):
     #################################################################
     async def setup(self, ctx):
         """ Sets up a guild and channel for Selfboat.py """
+        message = ctx.author
         warn = "Oops, wrong Guild\nI'll do this in my Guild! Sorry"
-        desc = textwrap.fill("""As it currently is (Nov-2017), discord.py API wrapper doesn't handle message 
-        Headers *'correctly'* for self-bots, only for regular bot-accounts, and the Discord API doesn't like 
-        these Headers to show up in any DMs, so they *will* most likely `flag` or `disable` your account for 
-        such infractions. Because this constitutes Discord API abuse. \n
-        However, this is not the case with ***Selfboat.py***.\n\n
-        Regardless, please use this personal Python app wisely.\n```py\n
-        The purpose of this channel is for you to spam commands and practise, as well as to print all errors 
-        and messages any time you execute commands elsewhere.```\n***Selfboat.py*** is made in Python3.6 and 
-        uses v1.0.0.x a fork of Discord.py\n\nPlease join our Support Guild to continue to enjoy of this app
-        and get news about fixes and features, and suggest more.\nhttps:discord.gg/""")
+        desc = textwrap.dedent("""As it currently is (Nov-2017), discord.py API wrapper v1.0.0a doesn't handle 
+        message Headers *'correctly'*  for self-bots, as it is meant for regular bot-accounts; and the Discord 
+        API doesn't like these Headers to show up in any DMs that are supposed to come from user-accounts, so 
+        they *will* most likely `flag` or `disable` your account for such infractions.\n\n**Why?** Because this 
+        constitutes Discord API abuse.\nHowever, this is not the case with ***Selfboat.py***.\n\nRegardless, 
+        please use this personal Python app wisely.\n```py\nThe purpose of this channel is for you to spam 
+        commands and practise, as well as to print all errors and messages any time you execute commands 
+        elsewhere.```\n***Selfboat.py*** is made in Python3.6 and uses v1.0.0aX, a fork of Discord.py\n\nPlease 
+        join our Support Guild to continue to enjoy of this app and get news about fixes and features, and 
+        suggest more.\nhttps://discord.gg/2B4UvKx""")
+        v = 'created by cgrok using <https://github.com/fourjr/discord.py@rewrite>'
+        foo = '» A lite, clean & stealthy boat to keep you afloat «'
+
         if ctx.author.id != ctx.guild.owner_id:
-            return await ctx.edit(ctx.message, warn, delete_after=5)
+            return await message.edit(content=warn, delete_after=5)
 
         if ctx.author.id == ctx.guild.owner_id:
             if discord.utils.get(ctx.guild.categories, name='!»--~ ModLogs ~--«!'):
@@ -374,19 +378,19 @@ class Selfboat(commands.Bot):
                 modlogs_category = await ctx.guild.create_category(name='»--~ ModLogs ~--«')
                 await modlogs_category.edit(position=0)
                 c = await ctx.guild.create_text_channel(name='channel-log', category=modlogs_category)
-                em = discord.Embed(title="Welcome to Selfboat.py, your personal bot", 
+                em = discord.Embed(title="Welcome, here you can test Selfboat.py's commands",
                                    colour=discord.Colour(0xed791d))
-                em.description = f"{desc}"
-                em.set_footer(text='»A lite, clean & stealthy boat to keep you afloat«')
-                em.set_image(url='https://take-me-to.space/CS8ddXG.png')
+                em.description = f'{desc}'
+                em.add_field(name='Selfboat.py', value=v)
+                em.set_footer(text=foo, icon_url='https://take-me-to.space/BMznunc.png')
+                em.set_thumbnail(url='https://take-me-to.space/d66twk4.png')
                 await c.send(embed=em)
                 await ctx.send('***Selfboat.py*** server is ready.')
 
             except discord.Forbidden:
-                await ctx.edit(ctx.message, warn, delete_after=5)
+                await message.edit(content=warn, delete_after=5)
         else:
             pass
-
 
     # Selfboat doesn't print results outside ERROR-CHANNEL
     '''@commands.command(aliases=["reloadcog"], name='reload')
