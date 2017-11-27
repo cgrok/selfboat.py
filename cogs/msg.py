@@ -18,9 +18,6 @@ from urllib.request import urlopen
 class Messages:
     def __init__(self, bot):
         self.bot = bot
-        # prepare the session for the dictionaries
-        self.session = bot.session
-
 
     @commands.command()
     async def clap(self, ctx, *, msg):

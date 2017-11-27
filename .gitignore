@@ -1,2 +1,3 @@
 data/config.json
 data/options.json
+cogs/cmd_repo.py

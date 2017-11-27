@@ -9,11 +9,11 @@ Take it with you everywhere you go. *~~However, don't take them out in public~~*
  
 ## Features
 
-- All commands respond in plain text (with the ocacional markdown) and raw images. Bye bye to all the nice embeds and colorthief...
+- All commands respond in plain text (with the occacional markdown) and raw images. Bye bye to all the nice embeds and colorthief...
 
 - Any relevant or important output is printed in a single ERROR-CHANNEL that's created automatically after a successful install.
 
-- By default the prefix is `//`, though you can change it. Just be smart and don't use `selfbot.`, `self.`, or `s.`. And stay clear of triggering ones such as: `!`, `?`, `@`, `#`, `>`, `]`, `}`, `-`, `=`, `+`, and `$`, because they'll trigger every single bot in that server, and call unnecesary attention.
+- By default the prefix is `//`, though you can change it. Just be smart and don't use `selfbot.`, `self.`, or `s.`. And stay clear of triggering ones such as: `!`, `?`, `@`, `#`, `>`, `]`, `}`, `-`, `=`, `+`, and `$`, because they'll trigger every single bot in that server, and call unnecessary attention.
 
 - **`//help`** is also gone. To access a list of all commands, be sure you are in ERROR-CHANNEL, and that you use `//c`.
 
@@ -27,7 +27,7 @@ Take it with you everywhere you go. *~~However, don't take them out in public~~*
 
 - Besides Mods banning regular self-bot users giving that as the only reason, there are also moderation bots that can ban users who print embeds in their own messages, as embeds and custom presence status are only allowed for bot-accounts.
 
-- As it currently is, discord.py library doesn't handle message Headers correctly for anything other than bot-accounts, and Discorod API doesn't like these Headers in their DMs, so they *will* flag or disable your account if you use any regular self-bot in private messages. This is not the case with ***Selfboat.py***.
+- As it currently is, discord.py library doesn't handle message Headers correctly for anything other than bot-accounts, and Discord API doesn't like these Headers in their DMs, so they *will* flag or disable your account if you use any regular self-bot in private messages. This is not the case with ***Selfboat.py***.
 
 - Another issue is the excessive use of Embeds for most self-bot responses. These go against Discord API, in the same way that BetterDiscord's embeds and other fishy plugins are.
 

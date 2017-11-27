@@ -4,7 +4,6 @@ import random
 import aiohttp
 import json
 import os
-import urbandict
 import bs4 as bs
 import urllib.request
 import requests
